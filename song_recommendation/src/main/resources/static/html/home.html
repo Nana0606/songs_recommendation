@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html ng-app="App">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+          content="Creative - Bootstrap 3 Responsive Admin Template">
+    <meta name="author" content="GeeksLabs">
+    <meta name="keyword"
+          content="Creative, Dashboard, Admin, Template, Theme, Bootstrap, Responsive, Retina, Minimal">
+    <title>歌曲推荐系统</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <!-- bootstrap theme -->
+    <link href="../css/bootstrap-theme.css" rel="stylesheet">
+
+    <!--external css-->
+    <!-- font icon -->
+    <link href="../css/elegant-icons-style.css" rel="stylesheet"/>
+    <link href="../css/font-awesome.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="../css/owl.carousel.css" type="text/css">
+    <link href="../css/jquery-jvectormap-1.2.2.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <link href="../css/style-responsive.css" rel="stylesheet"/>
+    <!--<link href="../css/xcharts.min.css" rel=" stylesheet">-->
+    <link href="../css/jquery-ui-1.10.4.min.css" rel="stylesheet">
+
+
+    <link href="../css/nucleo.css" rel="stylesheet">
+    <!-- Argon CSS -->
+    <link type="text/css" href="../css/argon.css" rel="stylesheet">
+    <!--<link type="text/css" href="../css/layer.css" rel="stylesheet">-->
+
+    <style type="text/css">
+        a:link {color: #FFFF00} /* 未访问的链接 */
+        a:visited {color: #009966} /* 已访问的链接 */
+        a:hover {color: #FFCC00} /* 鼠标移动到链接上 */
+        /*a:active {color: #009966} !* 选定的链接 *!*/
+    </style>
+
+</head>
+
+<body ng-app="App">
+<main>
+    <div class="position-relative" ng-controller="homeCtrl">
+        <!-- Hero for FREE version -->
+        <section class="row section-hero section-shaped my-0">
+            <div class="shape shape-style-1 shape-primary">
+                <span class="span-150"></span>
+                <span class="span-50"></span>
+                <span class="span-50"></span>
+                <span class="span-75"></span>
+                <span class="span-100"></span>
+                <span class="span-75"></span>
+                <span class="span-50"></span>
+                <span class="span-100"></span>
+                <span class="span-50"></span>
+                <span class="span-100"></span>
+            </div>
+            <!--<div class="container">-->
+                <!--<div class="row align-items-center justify-content-md-between">-->
+                    <!--<div class="col-md-6">-->
+                        <!--<h2 class="mb-0 font-weight-light">Thank you for attention!</h2>-->
+                    <!--</div>-->
+                    <!--<div class="col-md-6 nav nav-footer justify-content-end">-->
+                        <!--<button type="button" class="btn btn-1 btn-primary btn btn-link" ng-click="note()" style="color: #ffffff;">使用说明</button>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<hr style="border:0.5px solid ghostwhite;">-->
+                <!--<div style="margin-top: 20px;"></div>-->
+            <!--</div>-->
+            <div class="col">
+                <div class="row" style="float:right; padding-right: 15px;margin-top: 5px;">
+                    <button type="button" class="btn btn-sm btn-primary btn btn-link" ng-click="note()" style="color: #ffffff;">使用说明</button>
+                </div>
+                <div class="col container shape-container d-flex" style="margin-top: 6rem;">
+                <!--<div style="float:right; padding-right: 15px;">-->
+                    <!--<button type="button" class="btn btn-1 btn-primary btn btn-link" ng-click="note()" style="color: #ffffff;">使用说明</button>-->
+                <!--</div>-->
+                    <div class="col px-0">
+                    <!--<hr style="border:0.5px solid ghostwhite;">-->
+                    <div class="row justify-content-center align-items-center">
+                        <div class="col-lg-7 text-center pt-lg">
+                            <div style="margin-top: 250px;"></div>
+                            <div class="col">
+                                <div class="col-lg-2">
+                                    <input ng-model="singer" type="text" placeholder="歌手名" class="form-control" />
+                                </div>
+                                <div class="col-lg-4">
+                                    <input ng-model="song" type="text" placeholder="歌曲名/关键词" class="form-control" />
+                                </div>
+                                <div class="col-lg-1">
+                                    <button class="btn btn-1 btn-primary" type="submit" ng-click="toDisplayed()">推荐</button>
+                                </div>
+                                <div class="col-lg-7" style="color: #ffffff; margin-left: 20px; text-align: left">
+                                    <!--<div style="margin-top: 40px;"></div>-->
+                                    <!--<button type="button" class="btn btn-default btn-lg" ng-click="note()">使用须知</button>-->
+                                    <!--查询形式一：输入歌手名和歌曲名称<br />-->
+                                    <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;周杰伦 给我一首歌的时间 <br />-->
+                                    <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;邓紫棋 多远都要在一起 <br />-->
+                                    <!--&lt;!&ndash;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;莫文蔚 遇见另一个自己<br />&ndash;&gt;-->
+                                    <!--&lt;!&ndash;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;陈奕迅 你的背包<br />&ndash;&gt;-->
+                                    <!--查询形式二：只输入歌手名<br />-->
+                                    <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;郑中基<br />-->
+                                    <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;陈楚生<br />-->
+                                    <!--查询形式三：只输入歌曲名称或者关键字<br />-->
+                                    <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;有多少爱可以重来<br />-->
+                                    <!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;忧郁伤感难过<br />-->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--<div class="col-lg-7 text-left">-->
+                            <!--<div style="color: #ffffff;">比如：周杰伦 给我一首歌的时间</div>-->
+                        <!--</div>-->
+                        <div ng-if="tableStatus===2">
+                            <!--<div ng-show="openAlert()"></div>-->
+                            <div ng-show="openNotice()"></div>
+                        </div>
+
+                        <div ng-if="tableStatus===1">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th style="color: #ffffff;">歌手名</th>
+                                    <th style="color: #ffffff;">歌曲名</th>
+                                    <th style="color: #ffffff;">网易云链接</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="x in recommend_res">
+                                    <td style="color: #ffffff;">{{x.singer_name}}</td>
+                                    <td style="color: #ffffff;">{{x.song_name }}</td>
+                                    <td style="color: #ffffff;"><center><a href="https://music.163.com/#/song?id={{x.song_id}}" target="_blank" title="点击进入"><span class="glyphicon glyphicon-music"></span></a></center></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+</body>
