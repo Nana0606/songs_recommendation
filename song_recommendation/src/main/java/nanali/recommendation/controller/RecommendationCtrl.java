@@ -91,24 +91,6 @@ public class RecommendationCtrl {
         else if (singer_name.equals("") && (!song_name.equals(""))){
             // 若只有song_name, singer_name为空，输入字当做关键词搜索。
             res = recommendationDao.getRecommendRes("", song_name, ConstantUtil.REC_NUMBER, false);
-            /*
-            /**
-             * Step1：查询倒排索引，看唱过这首歌的所有歌手。
-             * Step2：若有1或者多个歌手唱过，则按照比例推荐歌曲，这部分逻辑和(!singer_name.equals("")) && (!song_name.equals(""))一样
-             *        否则，若没有歌手，则认为是关键词，直接当成关键词查询。
-             */ /*
-            if(recommendationDao.getSingersInvertedIndex(song_name) == null){   //若没有作者，直接当做关键字
-                res = recommendationDao.getRecommendRes("", song_name, ConstantUtil.REC_NUMBER, false);
-            }else{
-                List<String> singers_list = recommendationDao.getSingersInvertedIndex(song_name);
-                int every = (int)(ConstantUtil.REC_NUMBER / singers_list.size());
-                for(int i = 0; i < singers_list.size() - 1; i++){
-                    ArrayList<JSONObject> res_every = recommendationDao.getRecommendRes(singers_list.get(i), song_name, every, true);
-                    res.addAll(res_every);
-                }
-                ArrayList<JSONObject> res_final = recommendationDao.getRecommendRes(singers_list.get(singers_list.size() - 1), song_name, (ConstantUtil.REC_NUMBER - every * (singers_list.size() - 1)), true);
-                res.addAll(res_final);
-            }*/
         }
         return res;
     }

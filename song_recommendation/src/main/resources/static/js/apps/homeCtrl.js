@@ -36,12 +36,6 @@ angular.module('App').controller(
                 })
             };
 
-            $scope.openAlert = function() {
-                Popup.alert('歌手/歌曲名/关键词不在数据库中，查询范围详见"使用说明，谢谢"', function () {
-                    $scope.tableStatus = 0;
-                });
-            };
-
             $scope.openNotice = function() {
                 Popup.notice('歌手/歌曲名/关键词不在数据库中，详见"使用说明"，谢谢！', 2000, function () {
                     $scope.tableStatus = 0;
@@ -78,14 +72,6 @@ angular.module('App').controller(
                             '田馥甄,张惠妹,花粥,蔡依林,张韶涵,李玉刚<br />' +
                             '</li></ul>'
                     }
-                    // , {
-                    //     title: '关于',
-                    //     content:
-                    //         '本网站为个人练习网站<br/>' +
-                    //         '有任何问题请联系：nali0606@foxmail.com<br />' +
-                    //         '作者：李娜/贺成 <br />'
-                    //
-                    // }
                     ]
                 });
             };
