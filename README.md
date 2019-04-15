@@ -38,20 +38,20 @@
 
 1、主界面：支持歌手名和歌曲名/关键词输入
 
-<div align=center><img src="https://github.com/Nana0606/songs_recommendation/blob/master/imgs/main.png" width="80%" alt="主界面"/></div>
+<div align=center><img src="https://github.com/Nana0606/songs-recommendation/blob/master/imgs/main.png" width="80%" alt="主界面"/></div>
 
 2、只输入歌手信息，这里举例：周杰伦
 
-<div align=center><img src="https://github.com/Nana0606/songs_recommendation/blob/master/imgs/only_singer.png" width="80%" alt="只输入歌手信息_周杰伦"/></div>
+<div align=center><img src="https://github.com/Nana0606/songs-recommendation/blob/master/imgs/only_singer.png" width="80%" alt="只输入歌手信息_周杰伦"/></div>
 
 3、输入歌手信息和关键词
 
-<div align=center><img src="https://github.com/Nana0606/songs_recommendation/blob/master/imgs/singer_and_song1.png" width="80%" alt="输入歌手和歌曲信息_邓紫棋/多远都要在一起"/></div>
-<div align=center><img src="https://github.com/Nana0606/songs_recommendation/blob/master/imgs/singer_and_song2.png" width="80%" alt="输入歌手和歌曲信息_陈奕迅/爱情"/></div>
+<div align=center><img src="https://github.com/Nana0606/songs-recommendation/blob/master/imgs/singer_and_song1.png" width="80%" alt="输入歌手和歌曲信息_邓紫棋/多远都要在一起"/></div>
+<div align=center><img src="https://github.com/Nana0606/songs-recommendation/blob/master/imgs/singer_and_song2.png" width="80%" alt="输入歌手和歌曲信息_陈奕迅/爱情"/></div>
 
 4、只输入关键词，这里举例：甜蜜、自由
-<div align=center><img src="https://github.com/Nana0606/songs_recommendation/blob/master/imgs/only_keyword1.png" width="80%" alt="只输入关键词信息_甜蜜"/></div>
-<div align=center><img src="https://github.com/Nana0606/songs_recommendation/blob/master/imgs/only_keyword2.png" width="80%" alt="只输入关键词信息_自由"/></div>
+<div align=center><img src="https://github.com/Nana0606/songs-recommendation/blob/master/imgs/only_keyword1.png" width="80%" alt="只输入关键词信息_甜蜜"/></div>
+<div align=center><img src="https://github.com/Nana0606/songs-recommendation/blob/master/imgs/only_keyword2.png" width="80%" alt="只输入关键词信息_自由"/></div>
 
 ## 五、v2版本说明
 
