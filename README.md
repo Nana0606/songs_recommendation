@@ -1,7 +1,7 @@
 # songs-recommendation
 基于语义信息和行为信息的歌曲推荐。包括歌曲信息爬取、数据处理、word2vec歌曲向量表示、Mysql歌曲信息存储、Redis倒排索引存储、歌曲推荐、web可视化展示。
 
-说明：思想来自贺成同学，我进行了实现。
+说明：思想来自男票@[贺成](https://github.com/tz28)，我主要负责实现。
 
 本练习具体说明请移步本人博客：https://blog.csdn.net/quiet_girl/article/details/89307282
 
