@@ -5,7 +5,14 @@
 
 本练习具体说明请移步本人博客：https://blog.csdn.net/quiet_girl/article/details/89307282
 
-## 一、文件说明
+## 一、环境说明
+
+- 编码语言：Python 3.7、Java 1.8.0
+- 编码工具：PyCharm、IntelliJ
+- 数据库：Mysql 5.7.25、Redis 5.0.4
+- 其他：gensim 3.6.1、Spring Boot 1.3.5.RELEASE、Bootstrap、AngularJS
+
+## 二、文件说明
 
 - data_crawling: 数据爬取文件，包括歌词爬取文件和歌曲评论数爬取文件（Python）。lyrics_\*是data_crawling.py的输出结果；comments_num为comments_num_crapy.py的输出信息。
 
@@ -16,7 +23,7 @@
 - song_recommendation：web可视化代码，前后端未分离（Java）。src/main/java/nanali中是java代码；src/main/resources/static中是js、css和html等文件。
 
 
-## 二、使用说明
+## 三、使用说明
 
 - data_crawling中文件执行顺序：data_crawling.py，comments_num_crapy.py
 
@@ -24,7 +31,7 @@
 
 - song_recommendation执行方法：直接执行java文件Application.java即可，访问地址：localhost:8080
 
-## 三、推荐逻辑
+## 四、推荐逻辑
 
 (1) 若只输入歌手名，则判断是否在数据库中，若在则推荐topK评论数最多的歌曲。否则，给出alert错误提示。
 
@@ -34,7 +41,7 @@
 
 (4) 对于vocabulary不在数据库中的词语，给出alert报错信息。
 
-## 四、web展示
+## 五、web展示
 
 1、主界面：支持歌手名和歌曲名/关键词输入
 
@@ -53,7 +60,7 @@
 <div align=center><img src="https://github.com/Nana0606/songs-recommendation/blob/master/imgs/only_keyword1.png" width="90%" alt="只输入关键词信息_甜蜜"/></div>
 <div align=center><img src="https://github.com/Nana0606/songs-recommendation/blob/master/imgs/only_keyword2.png" width="90%" alt="只输入关键词信息_自由"/></div>
 
-## 五、v2版本说明
+## 六、v2版本说明
 
 暂时本系统主要基于训练而成的vector信息进行推荐，主要存在的问题如下：
 >(1) 歌词信息不是很多，可能影响vector的训练质量。     
@@ -62,4 +69,4 @@
 v2版本改进点：
 >爬取网易云歌单信息，因为歌单是用户创建的，在很大程序上可以反映此用户的喜好，无论是歌词、歌曲风格、歌手等这都反映了用户的行为信息。后续将考虑使用歌单信息将每首歌表示成一个vector，这个vector则不仅考虑了语义信息，还包括用户喜好、歌曲风格等隐含信息。
 
-未完待更~
+## 未完待更~
