@@ -120,13 +120,13 @@ def get_comments_num(url, singer_name, song_name, song_id, params, encSecKey):
 
 if __name__ == "__main__":
     start_time = time.time()  # 开始时间
-    fPath = "./lyrics_陶喆/lyricsList.txt"
+    f_path = "./lyrics_陶喆/lyricsList.txt"
     params = get_params(1)
     encSecKey = get_encSecKey()
-    with open(fPath, 'r', encoding='utf8') as f:
+    with open(f_path, 'r', encoding='utf8') as f:
         singer_name = ""
         song_name = ""
-        singer_name_obj = re.match(r'./lyrics_(.*)/lyricsList.txt', fPath)
+        singer_name_obj = re.match(r'./lyrics_(.*)/lyricsList.txt', f_path)
         if singer_name_obj:
             singer_name = singer_name_obj.group(1)
             print("singer_name is::", singer_name)

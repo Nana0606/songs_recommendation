@@ -29,7 +29,6 @@ def handle_lyrics(song_dir_path, song_dir, file, del_words):
     对歌词进行处理。主要是去除一些异常字符、提示符等
     :param song_dir_path: 歌曲地址
     :param song_dir: 歌曲目录
-    :param fPath: 歌词文件夹路径
     :param del_words: 需要去掉的内容
     :return:
     """
