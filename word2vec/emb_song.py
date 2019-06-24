@@ -86,7 +86,7 @@ def train(cut_result_file, model_path):
     """
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
     sentences = word2vec.LineSentence(cut_result_file)
-    model = word2vec.Word2Vec(sentences, hs=1, workers=1, min_count=1, window=5, size=250)
+    model = word2vec.Word2Vec(sentences, sg=1, hs=1, workers=1, min_count=1, window=5, size=250)
     model.save(model_path)
 
 
