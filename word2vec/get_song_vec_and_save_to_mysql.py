@@ -22,9 +22,21 @@ from redis import Redis
 
 EMB_DIM = 250   # embedding维度
 res_global = {}   # key是去重过的(singer_name, song_name), value是(vector, song_id, comments_num)
+punc = list("！？｡＂＃＄％＆＇（）＊＋，*《》－／：；＜＝＞＠［＼]-=＾＿｀︿｛｜｝~～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.→")
+punc2 = ["......", "..", "..."]
+punc = punc + punc2
+stop_words = ["我", "你", "他", "它", "的", "在", "是", "了", "都", " ", " ", "就", "也", "让",
+              "着", "这", "我们", "你们", "他们", "它们", "那", "和", "end", "music"
+                                                                 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
+              'a', 's', 'd',
+              'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm',
+              '1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+frequent_word = stopwords.words('english')
+
+words_filenum = {}   # key表示words。value表示出现此词语的文件数目
 
 
-def load_mode(file):
+def load_model(file):
     """
     加载模型，并保存到vec_string_res中，为便于redis存储
     :param file:
@@ -61,6 +73,7 @@ def save_vocabulary_to_redis(vec_string_res):
     for key, value in vec_string_res.items():
         redis.hset(key, "vector", value)
 
+
 def save_song_to_mysql(connection):
     """
     将word2vec的结果保存到mysql中，保存字段包括singer_name, song_name, vector, song_id, comments_num
@@ -74,7 +87,7 @@ def save_song_to_mysql(connection):
     """
     sql_insert = """
     INSERT INTO songs(song_name, singer_name, vector, song_id, comments_num) VALUES ('%s', '%s', '%s', '%s', %d)
-    ON DUPLICATE KEY UPDATE comments_num=VALUES(comments_num);
+    ON DUPLICATE KEY UPDATE comments_num=VALUES(comments_num), vector=VALUES(vector);
     """
     # print("singer_name:%s, song_name:%s, vector_str::%s" % (singer_name, song_name.replace("'", "\\'"), vector_str))
     cursor = connection.cursor()
@@ -89,7 +102,75 @@ def save_song_to_mysql(connection):
     connection.commit()
     print("插入完毕！")
 
-def get_song_vector(content, model, singer_name, song_name, vocabulary, song_id, comments_num):
+
+def average_pooling(content, model, vocabulary):
+    """
+    通过将一首歌中所有word取average pooling计算每首歌的vector
+    :param content: 歌曲内容
+    :param model: word2vec结果
+    :param vocabulary:
+    :return:
+    """
+    song_cut = jieba.cut(content)  # 将歌曲分词
+    # print(song_cut)
+
+    count = 0
+    added_vector = np.array([0.0] * EMB_DIM)
+    for elem in song_cut:
+        if elem.strip() != '' and elem.strip() not in frequent_word and elem.strip() not in punc + stop_words:
+            if elem in vocabulary:
+                vector = model.wv.get_vector(elem)
+                added_vector += np.array(vector)
+                count += 1
+    final_vector = added_vector / count  # 歌曲中每个词的对应维度的平均值表示此歌曲的word2vec结果。
+    return final_vector
+
+
+def get_tfs(content):
+    """
+    获取某首歌中每一个word的term frequency
+    :param song_cut: 分词处理后的歌曲内容
+    :return: term frequency
+    """
+    song_cut = jieba.cut(content)
+    tfs = {}  # key is word，value is frequency
+    count = 0
+    for elem in song_cut:
+        tfs.setdefault(elem, 0)
+        tfs[elem] += 1
+        count += 1
+    for key, value in tfs.items():
+        tfs[key] = value / count
+    return tfs
+
+
+def tdidf_weigthed_pooling(content, model, vocabulary, idfs):
+    """
+    通过歌词获取一首歌的vector表示，使用tfidf-weighted pooling
+    :param content: 歌曲内容
+    :param model: word2vec
+    :param vocabulary: 词汇表
+    :param idfs: 所有word的idf值
+    :return:
+    """
+    tfs = get_tfs(content)
+
+    song_cut = jieba.cut(content)  # 将歌曲分词
+    count = 0
+    added_vector = np.array([0.0] * EMB_DIM)
+    for elem in song_cut:
+        if elem.strip() != '' and elem.strip() not in frequent_word and elem.strip() not in punc + stop_words:
+            if elem in vocabulary:
+                tf = tfs[elem]
+                idf = idfs[elem]
+                vector = model.wv.get_vector(elem)
+                added_vector += (tf * idf) * np.array(vector)
+                count += tf * idf
+    final_vector = added_vector / count  # 歌曲中每个词的对应维度的平均值表示此歌曲的word2vec结果。
+    return final_vector
+
+
+def get_song_vector(content, model, singer_name, song_name, vocabulary, song_id, comments_num, idfs):
     """
     计算歌曲word2vec的结果。
     :param content: 歌曲内容
@@ -102,27 +183,8 @@ def get_song_vector(content, model, singer_name, song_name, vocabulary, song_id,
     :param comments_num: 歌曲评论数目
     :return:
     """
-    punc = list("！？｡＂＃＄％＆＇（）＊＋，*《》－／：；＜＝＞＠［＼]-=＾＿｀︿｛｜｝~～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏.→")
-    punc2 = ["......", "..", "..."]
-    punc = punc + punc2
-    stop_words = ["我", "你", "他", "它", "的", "在", "是", "了", "都", " ", " ", "就", "也", "让",
-                  "着", "这", "我们", "你们", "他们", "它们", "那", "和", "end", "music"
-                                                                     'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
-                  'a', 's', 'd',
-                  'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm',
-                  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
-    frequent_word = stopwords.words('english')
-    song_cut = jieba.cut(content)   # 将歌曲分词
-    # print(song_cut)
-    count = 0
-    added_vector = np.array([0.0] * EMB_DIM)
-    for elem in song_cut:
-        if elem.strip() != '' and elem.strip() not in frequent_word and elem.strip() not in punc + stop_words:
-            if elem in vocabulary:
-                vector = model.wv.get_vector(elem)
-                added_vector += np.array(vector)
-                count += 1
-    final_vector = added_vector / count    # 歌曲中每个词的对应维度的平均值表示此歌曲的word2vec结果。
+    # final_vector = average_pooling(content, model, vocabulary)
+    final_vector = tdidf_weigthed_pooling(content, model, vocabulary, idfs)
     vector_str = ','.join(map(str, final_vector.tolist()))
     song_name_obj = re.match(r'.*(-.*(live|Live|LIVE|Album Version|Version))', song_name.strip())    # 有些歌曲中含有 -live的字眼，将其去除
     if song_name_obj:
@@ -134,6 +196,60 @@ def get_song_vector(content, model, singer_name, song_name, vocabulary, song_id,
             res_global[(singer_name.strip(), song_name.strip())] = (vector_str, song_id.strip(), comments_num)
     else:
         res_global[(singer_name.strip(), song_name.strip())] = (vector_str, song_id.strip(), comments_num)
+
+
+def get_words_num(content):
+    """
+    获取tf-idf中求idf分母的数据，即得到每一个word出现在了多少文件中
+    :param content: 歌曲数据
+    :return:
+    """
+    song_cut = jieba.cut(content)  # 将歌曲分词
+    words_set = set()
+    for elem in song_cut:
+        words_set.add(elem)
+    for elem in words_set:
+        words_filenum.setdefault(elem, 0)
+        words_filenum[elem] += 1
+
+
+def get_idfs(song_dirs, f_path):
+    """
+    获取所有word及其对一个的idf值
+    :param song_dirs:
+    :param f_path:
+    :return:
+    """
+    idfs = {}
+    all_songs_num = 0
+    for song_dir in song_dirs:  # 歌手文件夹
+        if song_dir.startswith('lyrics_'):
+            # 获取歌手名称
+            singer_name_obj = re.match(r'lyrics_(.*)', song_dir)
+            if singer_name_obj.group():
+                singer_name = singer_name_obj.group(1)
+            else:
+                singer_name = None
+
+            comment_file_name = "../data_crawling/comments_num/singer_" + singer_name + ".txt"
+            comments_info = read_comments(comment_file_name)
+            song_file_path = os.path.join(f_path, song_dir)  # 歌手文件夹路径
+            song_files = os.listdir(song_file_path)
+            # 遍历每一首歌歌词
+            for song_file in song_files:
+                song_name_obj = re.match(r'歌曲名-(.*).txt', song_file)
+                if song_name_obj.group():
+                    song_name = song_name_obj.group(1)
+                    if comments_info.get((singer_name, song_name)):   # 若在含有comment_num的列表中，则添加到数据库，否则直接忽略
+                        with open(os.path.join(song_file_path, song_file), 'r', encoding='utf8') as f:
+                            content = f.read()
+                            all_songs_num += 1
+                            get_words_num(content)
+                        f.close()
+    for word, num in words_filenum.items():
+        idfs.setdefault(word, 0)
+        idfs[word] = np.log(all_songs_num / ( num + 1))
+    return idfs
 
 
 def read_comments(comment_file_name):
@@ -162,6 +278,7 @@ def main(model, vocabulary, connection):
     """
     f_path = '../data_processing/'
     song_dirs = os.listdir(f_path)
+    idfs = get_idfs(song_dirs, f_path)
     for song_dir in song_dirs:  # 歌手文件夹
         if song_dir.startswith('lyrics_'):
             # 获取歌手名称
@@ -183,14 +300,15 @@ def main(model, vocabulary, connection):
                     if comments_info.get((singer_name, song_name)):   # 若在含有comment_num的列表中，则添加到数据库，否则直接忽略
                         with open(os.path.join(song_file_path, song_file), 'r', encoding='utf8') as f:
                             content = f.read()
-                            get_song_vector(content, model, singer_name, song_name, vocabulary, comments_info[(singer_name, song_name)][0], comments_info[(singer_name, song_name)][1])
+                            get_song_vector(content, model, singer_name, song_name, vocabulary, comments_info[(singer_name, song_name)][0], comments_info[(singer_name, song_name)][1], idfs)
                         f.close()
             print(singer_name + "处理完毕")
     save_song_to_mysql(connection)
 
+
 if __name__ == '__main__':
     model_path = './word2vec_res.model'    # word2vec模型结果存储地址
-    model, vocabulary, vec_string_res = load_mode(model_path)
+    model, vocabulary, vec_string_res = load_model(model_path)
     save_vocabulary_to_redis(vec_string_res)
     connection = pymysql.Connect(
         host='localhost',
